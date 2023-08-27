@@ -1,0 +1,53 @@
+version: '3.9'
+services:
+  app:
+    restart:  always
+    build: .
+    ports:
+      - 8000:8000
+    # expose:
+    #   - 8000
+    volumes:
+      - ./app:/app   # - app:/app is absolutley incorrect
+      - ./data/web:/vol/web
+    environment:
+      DEBUG : 'true'
+    # command: gunicorn app.wsgi:application --bind 0 :8000
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    container_name: drf-djshop
+    depends_on:
+      # - nginx
+      - postgres
+  # nginx:
+  #   restart:  always
+  #   build: ./nginx
+  #   ports:
+  #     - 80:80
+  # container_name: nginx(djshop)
+  #   volumes:
+  #     - web-static:/www/static
+  postgres:
+    restart:  always 
+    image: postgres:15-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    container_name: pgdb-djshop
+    environment: 
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: django_db
+      POSTGRES_USER: django_user
+  # redis:
+  #   restart: always
+  #   image: redis:latest
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redisdata:/data
+volumes:
+  # static:
+  pgdata:
+  # redisdata:
+
+      
