@@ -22,7 +22,7 @@ front_urls = [
     path('api/front/catalog/', include("catalog.urls.front", namespace="catalog-front"))
 ]
 admin_urls = [
-    path('api/admin/catalog/', include("catalog.urls.admin", namespace="catalog-front"),)
+    path('api/admin/catalog/', include("catalog.urls.admin", namespace="catalog-admin"),)
 ]
 spectacular_patterns = [
     # YOUR PATTERNS

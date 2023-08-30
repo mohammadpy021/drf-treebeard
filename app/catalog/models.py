@@ -1,7 +1,6 @@
 from django.db import models
-
+from catalog.managers import CategoryQuerySet
 from treebeard.mp_tree import MP_Node
-
 class Category(MP_Node):
     title = models.CharField(max_length=255,  db_index=True)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -9,7 +8,7 @@ class Category(MP_Node):
     slug = models.SlugField(unique=True, )
     prepopulated_fields = {"slug": ["title",]}
     # node_order_by = ['name']
-
+    objects = CategoryQuerySet.as_manager() #Custom Manager
     def __str__(self):
         return self.title
     class Meta:

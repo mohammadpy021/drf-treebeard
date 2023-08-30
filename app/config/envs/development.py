@@ -15,9 +15,6 @@ DATABASES = {
         'PASSWORD': environ.get('POSTGRES_PASSWORD','123456'),
         'HOST': 'postgres',
         'PORT': '5432',
-        
-
-
     }
 }
 
