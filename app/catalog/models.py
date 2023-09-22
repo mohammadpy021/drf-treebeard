@@ -50,21 +50,21 @@ class ProductClass(models.Model):
 
 class ProductAttribute(models.Model):
     class AttributeTypeChoice(models.TextChoices):
-        text =  _("text")
-        integer =  _("integer")
-        float =  _("float")
-        option =  _("option")
+        text         =  _("text")
+        integer      =  _("integer")
+        float        =  _("float")
+        option       =  _("option")
         multi_option =  _("multi_option")
-    title = models.CharField(max_length=255,  db_index=True)
-    type = models.CharField(max_length=16,  choices=AttributeTypeChoice.choices, default=AttributeTypeChoice.text)
+    title         = models.CharField(max_length=255,  db_index=True)
+    type          = models.CharField(max_length=16,  choices=AttributeTypeChoice.choices, default=AttributeTypeChoice.text)
     prodcut_class = models.ForeignKey(ProductClass, on_delete=models.CASCADE, null=True, related_name="attributes")
-    option_group = models.ForeignKey(OptionGroup, on_delete=models.PROTECT, null= True, blank=True)
-    required = models.BooleanField(default=False)
+    option_group  = models.ForeignKey(OptionGroup, on_delete=models.PROTECT, null= True, blank=True)
+    required      = models.BooleanField(default=False)
+    class Meta:
+        verbose_name        = "Product attribute"
+        verbose_name_plural = "Product attributes"
     def __str__(self):
         return self.title
-    class Meta:
-        verbose_name = "Product attribute"
-        verbose_name_plural = "Product attributes"
 
 class Option(models.Model):
     class OptionTypeChoice(models.TextChoices):
@@ -73,25 +73,44 @@ class Option(models.Model):
         float =  _("float")
         option =  _("option")
         multi_option =  _("multi_option")
-    title = models.CharField(max_length=255,  db_index=True)
-    type = models.CharField(max_length=16,  choices=OptionTypeChoice.choices, default=OptionTypeChoice.text)
+    title        = models.CharField(max_length=255,  db_index=True)
+    type         = models.CharField(max_length=16,  choices=OptionTypeChoice.choices, default=OptionTypeChoice.text)
     option_group = models.ForeignKey(OptionGroup, on_delete=models.PROTECT, null= True, blank=True)
-    required = models.BooleanField(default=False)
+    required     = models.BooleanField(default=False)
     def __str__(self):
         return self.title
     class Meta:
-        verbose_name = "Option"
+        verbose_name        = "Option"
         verbose_name_plural = "Options"
 
 class Product(models.Model):
     class ProductTypeChoice(models.TextChoices):
         standalone = "standalone"
-        parent = "parent"
-        child = "child"
-    structure = models.CharField(max_length=16, choices=ProductTypeChoice.choices, default=ProductTypeChoice.standalone )
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, related_name="children", null = True, blank=True)
-    title = models.CharField(max_length=128, null = True, blank= True)
-    upc = UpperCaseCharField(max_length=24, unique=True, blank=True, null=True )                                                      #custom field    
-    is_public = models.BooleanField(default=True)
-    meta_title = models.CharField(null = True, blank= True)
+        parent     = "parent"
+        child      = "child"
+    structure        = models.CharField(max_length=16, choices=ProductTypeChoice.choices, default=ProductTypeChoice.standalone )
+    title            = models.CharField(max_length=128, null = True, blank= True)
+    upc              = UpperCaseCharField(max_length=24, unique=True, blank=True, null=True )                                                      #custom field    
+    is_public        = models.BooleanField(default=True)
+    meta_title       = models.CharField(null = True, blank= True)
     meta_description = models.TextField(null = True, blank= True)
+    parent           = models.ForeignKey("self", on_delete=models.CASCADE, related_name="children", null = True, blank=True)
+
+    product_class = models.ForeignKey(ProductClass, related_name="products", on_delete=models.PROTECT, null = True, blank= True)
+    attributes    = models.ManyToManyField(ProductAttribute, through="ProductAttributeValue")
+
+class ProductAttributeValue(models.Model):
+    product   = models.ForeignKey(Product, on_delete=models.CASCADE)
+    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE)
+
+    value_text         = models.TextField(null = True, blank= True)
+    value_integer      = models.IntegerField(null = True, blank= True)
+    value_float        = models.FloatField(null = True, blank= True)
+    value_option       = models.ForeignKey(OptionGroupValue, on_delete=models.PROTECT)
+    value_multi_option = models.ManyToManyField(OptionGroup)
+
+    class Meta:
+        verbose_name        = "attribute value"
+        verbose_name_plural = "attribute values"
+        unique_together     = ("product" , "attribute")
+        
