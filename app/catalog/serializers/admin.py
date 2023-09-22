@@ -18,7 +18,7 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
 CategoryTreeSerializer.get_children = extend_schema_field(serializers.ListField(child=CategoryTreeSerializer())) (CategoryTreeSerializer.get_children)#the last (CategoryTreeSerializer.get_children) is exactly like the code after @... and we do this because we need to assign the class to the function (recursive)
 
 class CreateCategorySerializer(serializers.ModelSerializer):
-    parent = serializers.IntegerField(required=False)
+    parent = serializers.IntegerField(required=False) #cutosm var
     
     def create(self, validated_data):
         parent = validated_data.pop('parent', None)
