@@ -2,6 +2,7 @@ from django.db import models
 from catalog.managers import CategoryQuerySet
 from treebeard.mp_tree import MP_Node
 from django.utils.translation import gettext_lazy as _
+from libs.db.fields import UpperCaseCharField
 class Category(MP_Node):
     title = models.CharField(max_length=255,  db_index=True)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -81,3 +82,16 @@ class Option(models.Model):
     class Meta:
         verbose_name = "Option"
         verbose_name_plural = "Options"
+
+class Product(models.Model):
+    class ProductTypeChoice(models.TextChoices):
+        standalone = "standalone"
+        parent = "parent"
+        child = "child"
+    structure = models.CharField(max_length=16, choices=ProductTypeChoice.choices, default=ProductTypeChoice.standalone )
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, related_name="children", null = True, blank=True)
+    title = models.CharField(max_length=128, null = True, blank= True)
+    upc = UpperCaseCharField(max_length=24, unique=True, blank=True, null=True )                                                      #custom field    
+    is_public = models.BooleanField(default=True)
+    meta_title = models.CharField(null = True, blank= True)
+    meta_description = models.TextField(null = True, blank= True)
