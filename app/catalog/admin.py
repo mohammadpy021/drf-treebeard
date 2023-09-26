@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.db.models import Count
-from catalog.models import Category, ProductClass, ProductAttribute, Option, OptionGroup
+from catalog.models import (Category,
+                             ProductClass,
+                             ProductAttribute, Option,
+                             ProductRecommendation)
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
 class MyAdmin(TreeAdmin):
@@ -25,8 +28,14 @@ class AttributeCountFilter(admin.SimpleListFilter):
             return queryset.annotate(
                 attr_count=Count("attributes")
             ).filter(attr_count__gte = 5)
-class ProductAttributeInline(admin.TabularInline):
+            
+class ProductAttributeInline(admin.TabularInline):      #TabularInline, StackedInline
     model = ProductAttribute
+    extra = 2                                           #number of forms
+class ProductRecommendationInline(admin.TabularInline): #TabularInline, StackedInline
+    model = ProductRecommendation
+    extra = 2
+    fk_name = "primary"                                 #Foreign_key: a field in the 'ProductRecommendation' model
 @admin.register(ProductClass)
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ["title", "slug", "track_stock", "require_shipping", "attribute_count"]
@@ -34,10 +43,11 @@ class AuthorAdmin(admin.ModelAdmin):
     actions = ["enable_track_stock", "disable_track_stock", "enable_require_shipping", "disable_require_shipping",]
     inlines = [
         ProductAttributeInline,
+        ProductRecommendationInline
     ]
     def attribute_count(self, obj):
         return obj.attributes.count() #"attributes" is a relatedname
-    # Actions
+    #Custom Actions
     def enable_track_stock(modeladmin, request, queryset):
         queryset.update(track_stock=True)
     def disable_track_stock(modeladmin, request, queryset):

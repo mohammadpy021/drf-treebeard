@@ -7,7 +7,7 @@ class Category(MP_Node):
     title = models.CharField(max_length=255,  db_index=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_public = models.BooleanField(default=True)
-    slug = models.SlugField(unique=True,)
+    slug = models.SlugField(unique=True, allow_unicode = True)
     prepopulated_fields = {"slug": ["title",]}
     # node_order_by = ['name']
     objects = CategoryQuerySet.as_manager() #Custom Manager
@@ -37,7 +37,7 @@ class OptionGroupValue(models.Model):
 class ProductClass(models.Model):
     title = models.CharField(max_length=255,  db_index=True)
     description = models.CharField(max_length=255, null=True, blank=True)
-    slug = models.SlugField(unique=True,)
+    slug = models.SlugField(unique=True, , allow_unicode = True)
     prepopulated_fields = {"slug": ("title",)}
     track_stock = models.BooleanField(default=True)
     require_shipping = models.BooleanField(default=True)
@@ -95,11 +95,12 @@ class Product(models.Model):
     meta_title       = models.CharField(null = True, blank= True)
     meta_description = models.TextField(null = True, blank= True)
     parent           = models.ForeignKey("self", on_delete=models.CASCADE, related_name="children", null = True, blank=True)
-
+    slug             = models.SlugField(unique=True, allow_unicode = True)
     product_class = models.ForeignKey(ProductClass, related_name="products", on_delete=models.PROTECT, null = True, blank= True)
     attributes    = models.ManyToManyField(ProductAttribute, through="ProductAttributeValue")
+    recomended_products =  models.ManyToManyField('catalog.Product', through="ProductRecommendation", blank=True)
 
-class ProductAttributeValue(models.Model):
+class ProductAttributeValue(models.Model):#for through 
     product   = models.ForeignKey(Product, on_delete=models.CASCADE)
     attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE)
 
@@ -113,4 +114,13 @@ class ProductAttributeValue(models.Model):
         verbose_name        = "attribute value"
         verbose_name_plural = "attribute values"
         unique_together     = ("product" , "attribute")
+
+class ProductRecommendation(models.Model):#for through 
+    primary         = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="primary_recommendation")
+    recomendation   = models.ForeignKey(Product, on_delete=models.CASCADE)
+    attribute       = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE)
+    rank            = models.PositiveIntegerField(default=0)
+    class Meta:
+        unique_together = ("primary" , "recomendation")
+        ordering        = ("primary", "-rank")
         
