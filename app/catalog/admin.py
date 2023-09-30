@@ -32,18 +32,20 @@ class AttributeCountFilter(admin.SimpleListFilter):
 class ProductAttributeInline(admin.TabularInline):      #TabularInline, StackedInline
     model = ProductAttribute
     extra = 2                                           #number of forms
+    
 class ProductRecommendationInline(admin.TabularInline): #TabularInline, StackedInline
     model = ProductRecommendation
-    extra = 2
+    extra = 2 
     fk_name = "primary"                                 #Foreign_key: a field in the 'ProductRecommendation' model
+    
 @admin.register(ProductClass)
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ["title", "slug", "track_stock", "require_shipping", "attribute_count"]
     list_filter = [ "track_stock", "require_shipping", AttributeCountFilter]
-    actions = ["enable_track_stock", "disable_track_stock", "enable_require_shipping", "disable_require_shipping",]
+    actions = ["enable_track_stock", "disable_track_stock", "enable_require_shipping", "disable_require_shipping"]
     inlines = [
         ProductAttributeInline,
-        ProductRecommendationInline
+        # ProductRecommendationInline
     ]
     def attribute_count(self, obj):
         return obj.attributes.count() #"attributes" is a relatedname

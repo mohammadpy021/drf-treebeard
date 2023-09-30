@@ -37,7 +37,7 @@ class OptionGroupValue(models.Model):
 class ProductClass(models.Model):
     title = models.CharField(max_length=255,  db_index=True)
     description = models.CharField(max_length=255, null=True, blank=True)
-    slug = models.SlugField(unique=True, , allow_unicode = True)
+    slug = models.SlugField(unique=True, allow_unicode = True)
     prepopulated_fields = {"slug": ("title",)}
     track_stock = models.BooleanField(default=True)
     require_shipping = models.BooleanField(default=True)

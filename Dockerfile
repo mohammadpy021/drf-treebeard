@@ -1,4 +1,4 @@
-FROM python:slim
+FROM python:3.11.5-slim
 
 
 COPY ./requirements /requirements
@@ -17,7 +17,7 @@ RUN pip install --upgrade pip
 # RUN apt install --update --no-cache  .tmp-deps \
 #     libjpeg zlib-dev jpeg-dev libxslt libxml2 
 #RUN apk add ...
-#...     ""./requirements" will got Error.  we dont need "./" we need "/"
+#...     ""./requirements" will got Error.  we dont need "./" we need "/" ,because /requirements is in the container but ./req... in in the current path of os
 RUN pip install -r /requirements/development.txt 
 # COPY . /app/
 RUN chmod -R +x /scripts &&\

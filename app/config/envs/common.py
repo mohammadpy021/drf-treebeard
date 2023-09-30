@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'treebeard',
     'channels',
-    'catalog.apps.CatalogConfig'
+    'catalog.apps.CatalogConfig',  #'app.apps.catalog' 
+    'media.apps.MediaConfig'     #'app.apps.media'
 ]
 
 MIDDLEWARE = [
@@ -127,7 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+MEDIA_ROOT = '/vol/web/media/' #defined in the Dockerfile
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
