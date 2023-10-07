@@ -1,4 +1,7 @@
+from collections.abc import Iterable
+from typing import Any
 from django.db import models
+from media.exceptions import ImageLimitException
 from catalog.managers import CategoryQuerySet
 from treebeard.mp_tree import MP_Node
 from django.utils.translation import gettext_lazy as _
@@ -100,6 +103,13 @@ class Product(models.Model):
     attributes    = models.ManyToManyField(ProductAttribute, through="ProductAttributeValue")
     recomended_products =  models.ManyToManyField('catalog.Product', through="ProductRecommendation", blank=True)
 
+    @property
+    def main_image(self):
+        if(self.images.exists()): #images is a related name in ProductImage
+            return self.images.first()
+        else:
+            return None
+
 class ProductAttributeValue(models.Model):#for through 
     product   = models.ForeignKey(Product, on_delete=models.CASCADE)
     attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE)
@@ -123,4 +133,25 @@ class ProductRecommendation(models.Model):#for through
     class Meta:
         unique_together = ("primary" , "recomendation")
         ordering        = ("primary", "-rank")
-        
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product,       on_delete=models.CASCADE, related_name="images")
+    image   = models.ForeignKey("media.Image", on_delete=models.PROTECT)    
+    
+    display_order = models.PositiveIntegerField(default=0)   
+    
+    class Meta:
+        ordering = ("display_order",)
+    #TODO: check the function below
+    def delete(self, *args, **kwargs) :
+        super().delete(*args, **kwargs)
+        for index, image in enumerate(self.product.images.all()):
+            image.display_order = index
+            image.save()
+
+    #TODO: check the function below   
+    # def save(self, *args, **kwargs) :
+    #     if (self.product.images.all().count() < 5):
+    #         return super().save(*args, **kwargs)
+    #     else :
+    #         raise ImageLimitException("You can not add more than 5 images per product")

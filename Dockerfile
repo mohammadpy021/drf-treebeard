@@ -20,7 +20,7 @@ RUN pip install --upgrade pip
 #...     ""./requirements" will got Error.  we dont need "./" we need "/" ,because /requirements is in the container but ./req... in in the current path of os
 RUN pip install -r /requirements/development.txt 
 # COPY . /app/
-RUN chmod -R +x /scripts &&\
+RUN chmod -R +x /scripts && \
     mkdir -p /vol/web/static && \
     mkdir -p /vol/web/media && \
     adduser --disabled-password --no-create-home user && \
