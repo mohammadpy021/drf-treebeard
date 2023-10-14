@@ -1,6 +1,6 @@
-from collections.abc import Iterable
 from typing import Any
 from django.db import models
+from libs.db.models import AuditableModel
 from media.exceptions import ImageLimitException
 from catalog.managers import CategoryQuerySet
 from treebeard.mp_tree import MP_Node
@@ -86,7 +86,7 @@ class Option(models.Model):
         verbose_name        = "Option"
         verbose_name_plural = "Options"
 
-class Product(models.Model):
+class Product(AuditableModel):
     class ProductTypeChoice(models.TextChoices):
         standalone = "standalone"
         parent     = "parent"

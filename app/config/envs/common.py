@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'treebeard',
     'channels',
     'catalog.apps.CatalogConfig',  #'app.apps.catalog' 
-    'media.apps.MediaConfig'     #'app.apps.media'
+    'media.apps.MediaConfig' ,    #'app.apps.media'
+    'analytics.apps.AnalyticsConfig', #'app.apps.analytics
 ]
 
 MIDDLEWARE = [
